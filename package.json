@@ -1,0 +1,21 @@
+{
+  "name": "crypto-game",
+  "version": "1.0.0",
+  "description": "Crypto game implementation",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "node --loader ts-node/esm index.ts",
+    "test": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' crypto.test.ts"
+  },
+  "dependencies": {
+    "@noble/ed25519": "^2.0.0",
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}
