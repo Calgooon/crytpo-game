@@ -8,9 +8,11 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "jsx": "react",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
-  "include": ["*.ts"],
+  "include": ["*.ts", "*.tsx"],
   "exclude": ["node_modules"],
   "ts-node": {
     "esm": true,
