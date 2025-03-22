@@ -45,7 +45,7 @@ async function testCrypto() {
 
   // Reset client and wait for rate limit to reset
   await client.initialize();
-  await new Promise(resolve => setTimeout(resolve, 50)); // Allow rate limit to reset
+  await new Promise(resolve => setTimeout(resolve, 520)); // Allow rate limit to reset
   
   console.log('\nTesting with proper timing...');
   
@@ -55,7 +55,7 @@ async function testCrypto() {
       const response = await client.sendScoreUpdate(score);
       console.log(response)
       console.log(`Score updated to ${score}: ${response.status}`);
-      await new Promise(resolve => setTimeout(resolve, 50)); // 50ms delay > 33ms minimum
+      await new Promise(resolve => setTimeout(resolve, 520)); // 50ms delay > 33ms minimum
     } catch (error: any) {
       console.error(`Update failed: ${error.message}`);
       break;

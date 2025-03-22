@@ -34,8 +34,10 @@ export class GameServer {
   private sessionData: Map<string, GameSession>;
   private readonly keyExpirationMs = 3000; // 3 seconds
   private readonly maxScoreDelta = 100; // Maximum score increase per update
-  private readonly maxUpdatesPerSecond = 30; // Rate limiting
+  private readonly maxUpdatesPerSecond = 2; // Rate limiting - only 2 updates per second
   private readonly updateWindowMs = 1000; // 1 second window for rate limiting
+  private readonly timestampToleranceMs = 2000; // 2 seconds tolerance for timestamps
+  private readonly maxNetworkLatencyMs = 1000; // Maximum expected network latency
 
   constructor() {
     this.sessionData = new Map();
@@ -128,11 +130,11 @@ export class GameServer {
       throw new Error('Session invalid or completed');
     }
 
-    // Rate limiting check - minimum 33ms between updates (about 30 fps)
+    // Rate limiting check - minimum 500ms between updates (2 updates per second)
     const now = Date.now();
     const timeSinceLastUpdate = now - session.lastUpdateTime;
-    if (timeSinceLastUpdate < 33) { // Allow roughly 30 updates per second
-      throw new Error('Rate limit exceeded - updates too frequent');
+    if (timeSinceLastUpdate < 500) { // Must wait at least 500ms between updates
+      throw new Error('Rate limit exceeded - maximum 2 updates per second allowed');
     }
 
     // Check key expiration (3 seconds)
@@ -141,11 +143,25 @@ export class GameServer {
       throw new Error('Signing key expired');
     }
 
-    // Verify timestamp (±1 second)
-    const serverTime = new Date(getServerTime()).getTime();
-    const clientTime = new Date(update.timestamp).getTime();
-    if (Math.abs(serverTime - clientTime) > 1000) {
-      throw new Error('Timestamp out of sync');
+    // Enhanced timestamp verification
+    const serverTime = Date.now();
+    const clientTime = Date.parse(update.timestamp);
+    
+    if (isNaN(clientTime)) {
+      throw new Error('Invalid timestamp format');
+    }
+
+    // Calculate the time difference
+    const timeDiff = Math.abs(serverTime - clientTime);
+    
+    // Check if the timestamp is too far in the future
+    if (clientTime > serverTime + this.maxNetworkLatencyMs) {
+      throw new Error('Timestamp is in the future');
+    }
+    
+    // Check if the timestamp is too far in the past
+    if (clientTime < serverTime - this.timestampToleranceMs) {
+      throw new Error('Timestamp is too old');
     }
 
     // Verify HMAC signature
