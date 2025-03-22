@@ -1,26 +1,15 @@
 {
   "name": "crypto-game",
   "version": "1.0.0",
-  "description": "Crypto game implementation",
-  "main": "index.tsx",
-  "type": "module",
+  "description": "Crypto game implementation with React frontend and Express backend",
   "scripts": {
-    "start": "tsx index.tsx",
-    "test": "tsx crypto.test.tsx"
-  },
-  "dependencies": {
-    "@noble/ed25519": "^2.0.0",
-    "@types/crypto-js": "^4.2.2",
-    "crypto-js": "^4.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start",
+    "dev": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "test": "cd backend && npm test"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "ts-node": "^10.9.0",
-    "tsx": "^4.7.1",
-    "typescript": "^5.0.0"
+    "concurrently": "^8.2.2"
   }
 }

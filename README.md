@@ -1,6 +1,59 @@
-# Crypto Game Security Demo
+# Crypto Game
 
-A demonstration of secure client-server communication in a game context, implementing various cryptographic security measures.
+A secure crypto game implementation with React frontend and Express backend.
+
+## Project Structure
+
+```
+crypto-game/
+├── frontend/           # React frontend application
+│   ├── src/           # Frontend source code
+│   ├── package.json   # Frontend dependencies
+│   └── tsconfig.json  # Frontend TypeScript config
+├── backend/           # Express backend application
+│   ├── src/          # Backend source code
+│   ├── package.json  # Backend dependencies
+│   └── tsconfig.json # Backend TypeScript config
+└── package.json      # Root package.json for managing both apps
+```
+
+## Setup
+
+1. Install dependencies:
+```bash
+npm run install:all
+```
+
+2. Start development servers:
+```bash
+npm run dev
+```
+
+This will start:
+- Frontend at http://localhost:3000
+- Backend at http://localhost:4000
+
+## Development
+
+- Frontend: React application with TypeScript
+- Backend: Express API with TypeScript
+- Both applications use TypeScript for type safety
+
+## API Endpoints
+
+### Backend API (http://localhost:4000)
+
+- `POST /api/start-game`: Start a new game session
+- `POST /api/update-score`: Update game score
+- `GET /api/score/:sessionId`: Get current score for a session
+
+## Security Features
+
+- Cryptographic signatures for score updates
+- Rate limiting
+- Session management
+- Timestamp validation
+- Client proof verification
 
 ## Features
 

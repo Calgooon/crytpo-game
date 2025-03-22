@@ -1,0 +1,26 @@
+{
+  "name": "crypto-game-backend",
+  "version": "1.0.0",
+  "description": "Backend for Crypto game implementation",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/server.tsx",
+    "dev": "tsx watch src/server.tsx",
+    "build": "tsc",
+    "test": "tsx src/crypto.test.ts"
+  },
+  "dependencies": {
+    "@noble/ed25519": "^2.0.0",
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.0.0",
+    "@types/cors": "^2.8.17",
+    "tsx": "^4.7.1",
+    "typescript": "^5.0.0"
+  }
+} 
