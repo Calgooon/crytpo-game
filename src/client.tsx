@@ -39,15 +39,19 @@ class KeyManager {
 
 // Session cryptography operations
 class SessionCrypto {
-  private sessionKey: CryptoJS.lib.WordArray;
+  private _sessionKey: CryptoJS.lib.WordArray;
   private signingKey!: CryptoJS.lib.WordArray;
 
   constructor(clientPublicKey: Uint8Array, serverPublicKey: string) {
-    this.sessionKey = this.deriveSessionKey(clientPublicKey, serverPublicKey);
+    this._sessionKey = this.deriveSessionKey(clientPublicKey, serverPublicKey);
   }
 
   setSigningKey(signingKey: CryptoJS.lib.WordArray) {
     this.signingKey = signingKey;
+  }
+
+  getSessionKey(): CryptoJS.lib.WordArray {
+    return this._sessionKey;
   }
 
   private deriveSessionKey(clientPublicKey: Uint8Array, serverPublicKey: string): CryptoJS.lib.WordArray {
@@ -70,7 +74,7 @@ class SessionCrypto {
     
     return CryptoJS.AES.decrypt(
       CryptoJS.enc.Base64.stringify(encrypted),
-      this.sessionKey,
+      this._sessionKey,
       {
         iv: iv,
         mode: CryptoJS.mode.CBC,
@@ -95,6 +99,7 @@ export class GameClient {
   private readonly sessionToken: string;
   private readonly sessionId: string;
   private serverChallenge: string | null = null;
+  private serverPublicKey: string | null = null;
 
   constructor(sessionToken: string, sessionId: string) {
     this.sessionToken = sessionToken;
@@ -105,10 +110,32 @@ export class GameClient {
   async initialize(): Promise<void> {
     this.keyPair = await KeyManager.generateKeyPair();
     const response = await this.startGame();
+    this.serverPublicKey = response.sessionKey;
     this.sessionCrypto = new SessionCrypto(this.keyPair.publicKey, response.sessionKey);
     this.signingKey = this.sessionCrypto.decryptKey(response.encryptedSigningKey);
     this.sessionCrypto.setSigningKey(this.signingKey);
     this.challengeNonce = response.challengeNonce;
+  }
+
+  // Get current cryptographic state for UI display
+  async getCryptoState() {
+    const timestamp = getServerTime();
+    const payload = { score: 0, timestamp, sessionId: this.sessionId };
+    const signature = this.sessionCrypto.signPayload(payload);
+    const clientProof = await KeyManager.sign(
+      new TextEncoder().encode(this.challengeNonce),
+      this.keyPair.privateKey
+    );
+
+    return {
+      clientPublicKey: KeyManager.toBase64(this.keyPair.publicKey),
+      serverPublicKey: this.serverPublicKey || '',
+      sessionKey: CryptoJS.enc.Hex.stringify(this.sessionCrypto.getSessionKey()),
+      signingKey: CryptoJS.enc.Hex.stringify(this.signingKey),
+      challengeNonce: this.challengeNonce,
+      clientProof,
+      signature
+    };
   }
 
   private async startGame(): Promise<{ encryptedSigningKey: string; challengeNonce: string; sessionKey: string }> {
